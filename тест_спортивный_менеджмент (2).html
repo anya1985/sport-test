@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кто ты в сфере спортивного менеджмента?</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff; min-height: 100vh; display: flex;
+    justify-content: center; align-items: flex-start; padding: 24px 12px;
+  }
+  .card {
+    background: rgba(255,255,255,0.07); border-radius: 18px;
+    max-width: 640px; width: 100%; padding: 32px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+  }
+  h1 { font-size: 26px; margin-bottom: 10px; line-height: 1.3; }
+  .subtitle { color: #b8d4e3; font-size: 15px; margin-bottom: 22px; }
+  .progress-track { height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; margin-bottom: 24px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#f7971e,#ffd200); border-radius: 4px; transition: width .3s; }
+  .qnum { color: #ffd200; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .question { font-size: 19px; font-weight: 600; margin-bottom: 20px; line-height: 1.4; }
+  .option {
+    display: block; width: 100%; text-align: left; margin-bottom: 12px;
+    padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06); color: #fff; font-size: 15px;
+    cursor: pointer; transition: all .2s; line-height: 1.45;
+  }
+  .option:hover { background: rgba(255,255,255,0.16); border-color: #ffd200; transform: translateX(4px); }
+  .result-emoji { font-size: 48px; }
+  .result-title { font-size: 24px; margin: 12px 0 16px; }
+  .section-title { color: #ffd200; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; margin: 18px 0 8px; }
+  .section-text { font-size: 15px; line-height: 1.6; color: #e8f1f5; }
+  ul.list { margin-left: 20px; margin-bottom: 4px; }
+  ul.list li { font-size: 15px; line-height: 1.6; color: #e8f1f5; }
+  .tie-note { background: rgba(255,210,0,0.12); border: 1px solid rgba(255,210,0,0.4); border-radius: 10px; padding: 12px 14px; margin: 14px 0; font-size: 14px; line-height: 1.5; }
+  .bars { margin-top: 22px; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 8px; }
+  .bar-label { width: 210px; font-size: 13px; color: #b8d4e3; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 12px; background: rgba(255,255,255,0.12); border-radius: 6px; }
+  .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg,#f7971e,#ffd200); }
+  .btn-restart {
+    margin-top: 26px; padding: 12px 28px; border: none; border-radius: 10px;
+    background: linear-gradient(90deg,#f7971e,#ffd200); color: #1a1a1a;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .btn-restart:hover { opacity: .9; }
+  .divider { height: 1px; background: rgba(255,255,255,0.15); margin: 26px 0; }
+</style>
+</head>
+<body>
+<div class="card" id="app"></div>
+<script>
+const QUESTIONS = [{"q": "Представь: твой любимый клуб только что выиграл главный трофей сезона. Где ты в первую очередь ищешь себя в этой картине?", "options": [["Смотрю, не нарушили ли мы что-то по регламенту, — жду официальное подтверждение результата", "P"], ["Уже за кулисами: проверяю, всё ли готово к церемонии награждения", "E"], ["Пишу пост для соцсетей клуба — этот момент нужно правильно презентовать аудитории", "M"], ["Смотрю на игроков и думаю, как изменится их карьера после этого матча — и что можно изменить в системе клуба в будущем", "A"]]}, {"q": "Скандал: звёздный игрок не ходит на тренировки из-за вымышленной травмы и отказывается играть в предстоящих матчах. Твои действия?", "options": [["Первым делом открываю трудовой договор — какие санкции там прописаны", "P"], ["Говорю с игроком один на один, выясняю, что у него происходит", "A"], ["Составляю план: как не дать ситуации выйти в прессу до выяснения обстоятельств", "M"], ["Занимаюсь делом: перестраиваю расписание тренировок, чтобы команда не пострадала, и корректирую интерактивные зоны с участием этого игрока", "E"]]}, {"q": "Клубу поручили провести открытую тренировку для 500 болельщиков. С чего начнёшь?", "options": [["С плана площадки: вход, зоны, безопасное передвижение потоков людей", "E"], ["С согласований: уведомить спортивный объект, проверить требования безопасности и разрешения", "P"], ["С ажиотажа: анонс, создание контента, реклама и инфоповоды в соцсетях", "M"], ["С бюджета: сколько это стоит и как сделать так, чтобы клуб не остался в минусе; поиск возможных спонсоров", "A"]]}, {"q": "Что тебя больше зацепило бы в работе в целом?", "options": [["Разбирать статистику рекламных кампаний: охваты, вовлечённость, тренды, аналитика", "M"], ["Изучать контракты и кейсы: как клубы оспаривали дисквалификации, антидопинговые правила, регламенты и положения", "P"], ["Собирать досье на игроков: их форму, контрактные сроки, рыночную цену", "A"], ["Придумывать и реализовывать сценарии фан-зон и предматчевых шоу", "E"]]}, {"q": "Клуб представляет нового игрока болельщикам. Что ты берёшь на себя?", "options": [["Сценарий события: площадка, фан-зона, автограф-сессия — чтобы каждый ушёл с эмоциями", "E"], ["Работу с игроком: заранее изучаю его имидж и выстраиваю линию поведения на публике", "A"], ["Шоу вокруг анонса: прямой эфир, тизеры, хештег — чтобы о нём говорили", "M"], ["Бюрократию: проверяю регламент лиги и права спонсоров — кого и что можно показывать в кадре", "P"]]}, {"q": "Какая должность через 10 лет звучит для тебя круче всего?", "options": [["Глава юридического департамента клуба или спортивной лиги", "P"], ["Директор по коммуникациям и маркетингу крупного клуба", "M"], ["Личный агент топ-игрока (его интересы, контракты, трансферы)", "A"], ["Организатор международного турнира", "E"]]}, {"q": "Вы с друзьями решили создать любительскую лигу по любимому виду спорта из шести команд. Какую задачу вы возьмёте на себя?", "options": [["Разработать регламент: правила турниров, дисциплинарные санкции, порядок начисления очков", "P"], ["Найти площадку, составить расписание матчей и организовать финал так, чтобы это было событие, а не просто игра", "E"], ["Вести соцсети лиги: таблицу лучших бомбардиров, интервью, обзоры туров", "M"], ["Собирать взносы, вести бюджет, искать потенциальные команды-участники", "A"]]}, {"q": "Тебе дают суперспособность на один рабочий день. Какую выбираешь?", "options": [["Идеально помнить каждый пункт регламента и договора", "P"], ["Создавать из хаоса идеальные события, где всё начинается минута в минуту", "E"], ["Своими словами заставлять людей полюбить любой продукт или идею", "M"], ["Видеть потенциал в человеке за десять секунд разговора", "A"]]}];
+const RESULTS = {"P": {"title": "Специалист по спортивному праву", "emoji": "⚖️", "profile": "Вы специализируетесь на правовых аспектах спортивной индустрии. Ваша экспертиза охватывает контракты, регламенты, трансферное законодательство и защиту интересов участников спортивного процесса. Вы обеспечиваете юридическую безопасность всех операций в сфере спорта.", "skills": ["Детальный анализ правовых документов", "Знание спортивного законодательства", "Навыки ведения переговоров", "Способность предотвращать правовые риски", "Экспертиза в разрешении споров"], "careers": ["Спортивный юрист в клубах и федерациях", "Специалист по трансферному праву", "Консультант по спортивному праву", "Юрист в международных спортивных организациях"]}, "E": {"title": "Event-менеджер в спортивной индустрии", "emoji": "🎪", "profile": "Вы создаёте и реализуете спортивные мероприятия любого масштаба — от матчей до международных турниров. Ваша задача — превратить спортивное событие в незабываемое шоу для болельщиков.", "skills": ["Организация массовых мероприятий", "Управление проектами", "Координация команды", "Логистика и безопасность", "Работа с подрядчиками"], "careers": ["Менеджер по организации спортивных мероприятий", "Директор по работе с болельщиками", "Специалист по фан-зонам", "Организатор спортивных фестивалей"]}, "M": {"title": "Медиа-специалист и маркетолог", "emoji": "📱", "profile": "Вы отвечаете за продвижение спортивных брендов, создание контента и коммуникацию со спортивной аудиторией через все каналы. Ваша цель — построить сильный имидж клуба или спортсмена.", "skills": ["Стратегическое планирование", "Контент-менеджмент", "Digital-маркетинг", "Работа с социальными медиа", "Аналитика и метрики"], "careers": ["Спортивный маркетолог", "SMM-специалист в спортивных организациях", "PR-менеджер клуба", "Контент-директор спортивной медиаплатформы"]}, "A": {"title": "Спортивный агент и менеджер", "emoji": "🤝", "profile": "Вы занимаетесь развитием спортивной карьеры атлетов, ведёте переговоры о контрактах и строите долгосрочные стратегии для своих клиентов. Ваша работа — соединять интересы спортсменов и бизнеса.", "skills": ["Навыки ведения переговоров", "Знание рынка трансферов", "Стратегическое мышление", "Построение отношений", "Финансовый анализ"], "careers": ["Спортивный агент", "Менеджер спортивной команды", "Директор по развитию игроков", "Спортивный директор клуба"]}};
+const TYPE_LABELS = { P: "Спортивное право", E: "Event-менеджмент", M: "Медиа и маркетинг", A: "Агент / управление клубом" };
+const TYPE_ORDER = ["P", "E", "M", "A"];
+
+let step = 0;
+let scores = { P: 0, E: 0, M: 0, A: 0 };
+const app = document.getElementById("app");
+
+function renderStart() {
+  step = 0; scores = { P: 0, E: 0, M: 0, A: 0 };
+  app.innerHTML = `
+    <h1>Кто ты в сфере спортивного менеджмента?</h1>
+    <div class="subtitle">8 вопросов без правильных ответов — только вы и ваш стиль работы. Пройдите до конца и узнайте свой профессиональный профиль.</div>
+    <button class="option" onclick="renderQuestion()">Начать тест</button>`;
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[step];
+  const pct = Math.round((step / QUESTIONS.length) * 100);
+  let html = `
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="qnum">Вопрос ${step + 1} из ${QUESTIONS.length}</div>
+    <div class="question">${q.q}</div>`;
+  q.options.forEach((opt, i) => {
+    html += `<button class="option" onclick="answer('${opt[1]}')">${opt[0]}</button>`;
+  });
+  app.innerHTML = html;
+}
+
+function answer(type) {
+  scores[type]++;
+  step++;
+  if (step < QUESTIONS.length) renderQuestion();
+  else renderResult();
+}
+
+function resultCard(key) {
+  const r = RESULTS[key];
+  return `
+    <div class="result-emoji">${r.emoji}</div>
+    <div class="result-title">${r.title}</div>
+    <div class="section-title">Профессиональный профиль</div>
+    <div class="section-text">${r.profile}</div>
+    <div class="section-title">Ключевые компетенции</div>
+    <ul class="list">${r.skills.map(s => `<li>${s}</li>`).join("")}</ul>
+    <div class="section-title">Карьерные перспективы</div>
+    <ul class="list">${r.careers.map(c => `<li>${c}</li>`).join("")}</ul>`;
+}
+
+function renderResult() {
+  const max = Math.max(...TYPE_ORDER.map(t => scores[t]));
+  const winners = TYPE_ORDER.filter(t => scores[t] === max);
+  let html = `<div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>`;
+  if (winners.length > 1) {
+    html += `<div class="tie-note">У вас смешанный профиль: одинаково сильны «${winners.map(w => RESULTS[w].title).join("» и «")}». Такие сочетания в спорте очень ценятся — прочитайте оба описания.</div>`;
+  }
+  html += winners.map(resultCard).join('<div class="divider"></div>');
+  const maxScore = Math.max(...TYPE_ORDER.map(t => scores[t]), 1);
+  html += `<div class="bars">` + TYPE_ORDER.map(t => `
+    <div class="bar-row">
+      <div class="bar-label">${RESULTS[t].emoji} ${TYPE_LABELS[t]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(scores[t] / maxScore * 100)}%"></div></div>
+    </div>`).join("") + `</div>
+    <button class="btn-restart" onclick="renderStart()">Пройти ещё раз</button>`;
+  app.innerHTML = html;
+}
+
+renderStart();
+</script>
+</body>
+</html>
